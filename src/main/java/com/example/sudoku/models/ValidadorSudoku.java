@@ -1,26 +1,30 @@
 package com.example.sudoku.models;
 
 /**
- * Clase que valida un Sudoku de 6x6 (bloques de 2 filas x 3 columnas)
- * usando una lógica sencilla y muy explícita.
+ * Esta clase se encarga de validar un Sudoku de 6x6 (bloques de 2 filas x 3 columnas).
+ * Verifica si los números cumplen con las reglas del Sudoku: no se repiten en filas, columnas ni bloques.
+ *
  * @author Dana Sofia Gómez, Miguel Angel Lasso
  * @version 1.0
  */
 public class ValidadorSudoku {
 
-    // Constantes del tamaño del tablero y los bloques
+    // Constantes para definir el tamaño del tablero y los bloques
     private static final int TAMANO_TABLERO = 6;
     private static final int FILAS_POR_BLOQUE = 2;
     private static final int COLUMNAS_POR_BLOQUE = 3;
 
     /**
-     * Revisa si el número ya existe en la fila indicada.
+     * Revisa si un número ya está presente en una fila específica.
+     * @param tablero El tablero de Sudoku actual.
+     * @param numeroFila La fila que se quiere revisar.
+     * @param numeroARevisar El número que se quiere comprobar.
+     * @return true si el número no está repetido en la fila, false si ya existe.
      */
     public boolean validarNumeroEnFila(int[][] tablero, int numeroFila, int numeroARevisar) {
         for (int columna = 0; columna < TAMANO_TABLERO; columna++) {
             int valorActual = tablero[numeroFila][columna];
-            if (valorActual == numeroARevisar)
-            {
+            if (valorActual == numeroARevisar) {
                 return false; // el número ya está en la fila
             }
         }
@@ -28,7 +32,11 @@ public class ValidadorSudoku {
     }
 
     /**
-     * Revisa si el número ya existe en la columna indicada.
+     * Revisa si un número ya está presente en una columna específica.
+     * @param tablero El tablero de Sudoku actual.
+     * @param numeroColumna La columna que se quiere revisar.
+     * @param numeroARevisar El número que se quiere comprobar.
+     * @return true si el número no está repetido en la columna, false si ya existe.
      */
     public boolean validarNumeroEnColumna(int[][] tablero, int numeroColumna, int numeroARevisar) {
         for (int fila = 0; fila < TAMANO_TABLERO; fila++) {
@@ -41,33 +49,37 @@ public class ValidadorSudoku {
     }
 
     /**
-     * Revisa si el número ya existe en el bloque 2x3 correspondiente.
-     * Aquí se calcula manualmente el inicio del bloque.
+     * Revisa si un número ya está presente en el bloque 2x3 correspondiente a la posición dada.
+     * @param tablero El tablero de Sudoku actual.
+     * @param fila La fila de la celda que se quiere revisar.
+     * @param columna La columna de la celda que se quiere revisar.
+     * @param numeroARevisar El número que se quiere comprobar.
+     * @return true si el número no está repetido en el bloque, false si ya existe.
      */
     public boolean validarNumeroEnBloque(int[][] tablero, int fila, int columna, int numeroARevisar) {
         int filaInicioBloque;
         int columnaInicioBloque;
 
-        // Buscar manualmente el bloque según la fila
-        if (fila < 2) { // filas 0 y 1
+        // Determinar la fila inicial del bloque
+        if (fila < 2) {
             filaInicioBloque = 0;
-        } else if (fila < 4) { // filas 2 y 3
+        } else if (fila < 4) {
             filaInicioBloque = 2;
-        } else { // filas 4 y 5
+        } else {
             filaInicioBloque = 4;
         }
 
-        // Buscar manualmente el bloque según la columna
-        if (columna < 3) { // columnas 0,1,2
+        // Determinar la columna inicial del bloque
+        if (columna < 3) {
             columnaInicioBloque = 0;
-        } else { // columnas 3,4,5
+        } else {
             columnaInicioBloque = 3;
         }
 
-        // Revisar las 6 celdas del bloque (2 filas x 3 columnas)
-        for (int filaActual  = filaInicioBloque; filaActual  < filaInicioBloque + FILAS_POR_BLOQUE; filaActual ++) {
+        // Revisar todas las celdas del bloque
+        for (int filaActual = filaInicioBloque; filaActual < filaInicioBloque + FILAS_POR_BLOQUE; filaActual++) {
             for (int columnaActual = columnaInicioBloque; columnaActual < columnaInicioBloque + COLUMNAS_POR_BLOQUE; columnaActual++) {
-                if (tablero[filaActual ][columnaActual] == numeroARevisar) {
+                if (tablero[filaActual][columnaActual] == numeroARevisar) {
                     return false; // el número ya está en el bloque
                 }
             }
@@ -76,25 +88,30 @@ public class ValidadorSudoku {
     }
 
     /**
-     * Revisa si una fila completa no tiene números repetidos.
+     * Revisa si una fila completa es válida, es decir, que no tenga números repetidos.
+     * @param tablero El tablero de Sudoku actual.
+     * @param fila La fila que se quiere revisar.
+     * @return true si la fila es válida, false si hay números repetidos.
      */
     public boolean filaCompletaEsValida(int[][] tablero, int fila) {
         for (int i = 0; i < TAMANO_TABLERO; i++) {
             int numeroARevisar = tablero[fila][i];
             if (numeroARevisar != 0) {
-                // Verificar si el número se repite más adelante en la misma fila
                 for (int j = i + 1; j < TAMANO_TABLERO; j++) {
                     if (tablero[fila][j] == numeroARevisar) {
-                        return false;
+                        return false; // número repetido encontrado
                     }
                 }
             }
         }
-        return true;
+        return true; // no se encontraron repeticiones
     }
 
     /**
-     * Revisa si una columna completa no tiene números repetidos.
+     * Revisa si una columna completa es válida, es decir, que no tenga números repetidos.
+     * @param tablero El tablero de Sudoku actual.
+     * @param columna La columna que se quiere revisar.
+     * @return true si la columna es válida, false si hay números repetidos.
      */
     public boolean columnaCompletaEsValida(int[][] tablero, int columna) {
         for (int i = 0; i < TAMANO_TABLERO; i++) {
@@ -102,105 +119,97 @@ public class ValidadorSudoku {
             if (numeroARevisar != 0) {
                 for (int j = i + 1; j < TAMANO_TABLERO; j++) {
                     if (tablero[j][columna] == numeroARevisar) {
-                        return false;
+                        return false; // número repetido encontrado
                     }
                 }
             }
         }
-        return true;
+        return true; // no se encontraron repeticiones
     }
 
     /**
-     * Revisa si un bloque completo no tiene números repetidos.
+     * Revisa si un bloque completo 2x3 es válido, es decir, que no tenga números repetidos.
+     * @param tablero El tablero de Sudoku actual.
+     * @param filaInicioBloque La fila inicial del bloque.
+     * @param columnaInicioBloque La columna inicial del bloque.
+     * @return true si el bloque es válido, false si hay números repetidos.
      */
     public boolean bloqueCompletoEsValido(int[][] tablero, int filaInicioBloque, int columnaInicioBloque) {
-        // Recorre todas las filas del bloque 2x3
         for (int filaActual = filaInicioBloque; filaActual < filaInicioBloque + FILAS_POR_BLOQUE; filaActual++) {
-            // Recorre todas las columnas del bloque 2x3
             for (int columnaActual = columnaInicioBloque; columnaActual < columnaInicioBloque + COLUMNAS_POR_BLOQUE; columnaActual++) {
-
                 int numeroActual = tablero[filaActual][columnaActual];
-
-                // Si la celda no está vacía (es diferente de 0)
                 if (numeroActual != 0) {
-
-                    // Comparar este número con el resto de celdas del mismo bloque
                     for (int filaComparacion = filaActual; filaComparacion < filaInicioBloque + FILAS_POR_BLOQUE; filaComparacion++) {
                         for (int columnaComparacion = columnaActual + 1; columnaComparacion < columnaInicioBloque + COLUMNAS_POR_BLOQUE; columnaComparacion++) {
-
-                            // Si hay un número igual en otra celda del mismo bloque
                             if (tablero[filaComparacion][columnaComparacion] == numeroActual) {
-                                return false; // El bloque no es válido (número repetido)
+                                return false; // número repetido dentro del bloque
                             }
                         }
                     }
                 }
             }
         }
-        // Si no se encontró ningún número repetido, el bloque es válido
-        return true;
+        return true; // bloque sin repeticiones
     }
 
-
     /**
-     * Verifica si el tablero está completamente lleno
+     * Revisa si todo el tablero está completamente lleno (sin celdas vacías).
+     * @param tablero El tablero de Sudoku actual.
+     * @return true si el tablero está lleno, false si hay al menos una celda vacía.
      */
     public boolean tableroLleno(int[][] tablero) {
         for (int fila = 0; fila < TAMANO_TABLERO; fila++) {
             for (int columna = 0; columna < TAMANO_TABLERO; columna++) {
                 if (tablero[fila][columna] == 0) {
-                    return false;
+                    return false; // hay una celda vacía
                 }
             }
         }
-        return true;
+        return true; // todas las celdas tienen números
     }
 
     /**
-     * Verifica si se puede colocar un número en una celda específica.
-     * Es decir, revisa fila, columna y bloque.
+     * Verifica si se puede poner un número en una celda específica.
+     * @param tablero El tablero de Sudoku actual.
+     * @param fila La fila de la celda.
+     * @param columna La columna de la celda.
+     * @param numero El número que se quiere colocar.
+     * @return true si se puede colocar sin romper las reglas, false si ya existe en fila, columna o bloque.
      */
     public boolean sePuedePonerNumero(int[][] tablero, int fila, int columna, int numero) {
         boolean filaValida = validarNumeroEnFila(tablero, fila, numero);
         boolean columnaValida = validarNumeroEnColumna(tablero, columna, numero);
         boolean bloqueValido = validarNumeroEnBloque(tablero, fila, columna, numero);
 
-        if (filaValida && columnaValida && bloqueValido)
-        {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return filaValida && columnaValida && bloqueValido;
     }
 
     /**
-     * Verifica si el tablero completo es correcto.
+     * Verifica si el tablero completo es correcto según las reglas del Sudoku.
+     * @param tablero El tablero de Sudoku actual.
+     * @return true si todas las filas, columnas y bloques son válidos, false si alguna parte falla.
      */
     public boolean tableroEsCorrecto(int[][] tablero) {
-        // Revisar todas las filas
         for (int fila = 0; fila < TAMANO_TABLERO; fila++) {
             if (!filaCompletaEsValida(tablero, fila)) {
-                return false;
+                return false; // fila inválida
             }
         }
 
-        // Revisar todas las columnas
         for (int columna = 0; columna < TAMANO_TABLERO; columna++) {
             if (!columnaCompletaEsValida(tablero, columna)) {
-                return false;
+                return false; // columna inválida
             }
         }
 
-        // Revisar todos los bloques
         for (int filaBloque = 0; filaBloque < TAMANO_TABLERO; filaBloque += FILAS_POR_BLOQUE) {
             for (int columnaBloque = 0; columnaBloque < TAMANO_TABLERO; columnaBloque += COLUMNAS_POR_BLOQUE) {
                 if (!bloqueCompletoEsValido(tablero, filaBloque, columnaBloque)) {
-                    return false;
+                    return false; // bloque inválido
                 }
             }
         }
-        return true; // todas las partes son válidas
+        return true; // todo el tablero es correcto
     }
 
 }

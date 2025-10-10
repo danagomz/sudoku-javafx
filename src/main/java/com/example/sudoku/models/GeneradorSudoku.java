@@ -16,7 +16,7 @@ import java.util.Collections;
 
 public class GeneradorSudoku {
     /** ctes del tamaño total del tablero (6x6) */
-    private final int TAMANO = 6;
+    private static final int TAMANO = 6;
     private static final int FILAS_POR_BLOQUE = 2;
     private static final int COLUMNAS_POR_BLOQUE = 3;
 

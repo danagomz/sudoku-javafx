@@ -14,7 +14,6 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-
 <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="424.0" prefWidth="518.0" style="-fx-background-color: #91918D; -fx-background-radius: 20; -fx-border-color: black; -fx-border-radius: 20; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sudoku.controllers.InicioController">
    <children>
       <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="130.0" prefWidth="450.0" style="-fx-background-color: white;" text="BIENVENIDO AL SUDOKU" textAlignment="CENTER" wrapText="true">
@@ -42,12 +41,12 @@
             <HBox alignment="CENTER" prefHeight="139.0" prefWidth="598.0" GridPane.columnSpan="2" GridPane.halignment="CENTER">
                <children>
                   <ImageView fitHeight="174.0" fitWidth="188.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../../images/pngwing.com.png" />
-                     </image>
                      <effect>
                         <DropShadow />
                      </effect>
+                     <image>
+                        <Image url="@images/pngwing.com.png" />
+                     </image>
                   </ImageView>
                </children>
             </HBox>

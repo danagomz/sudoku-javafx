@@ -38,41 +38,62 @@ public class GeneradorSudoku {
         tableroJugador = new int[TAMANO][TAMANO]; // crear tablero del jugador vacío
         validador = new ValidadorSudoku(); // crea el objeto que validará las reglas
         listaNumeros = new ArrayList<>();// crea la lista de números disponibles
-        generarTablero();// genera automáticamente el tablero
-    }
 
-    /**
-     * Genera un tablero Sudoku 6x6 válido
-     * Mezcla los números del 1 al 6 en cada fila e intenta colocarlos en el tablero
-     * usando el validador para asegurar que cada posición cumpla las reglas del juego
-     */
-    private void generarTablero() {
-
-        // Paso 1: Llenar la lista con los números del 1 al 6
-        for (int i = 1; i <= TAMANO; i++)
-        {
+        // Llenar la lista con los números del 1 al 6
+        for (int i = 1; i <= TAMANO; i++) {
             listaNumeros.add(i);
         }
 
-        // Paso 2:Recorre todas las filas
-        for (int fila = 0; fila < TAMANO; fila++)
-        {
-            Collections.shuffle(listaNumeros);// Mezcla los números para que cada fila sea diferente
-            // Paso 3:Recorre todas las columnas
-            for (int columna = 0; columna < TAMANO; columna++)
-            {
+        generarTablero(); // genera un tablero válido completo
+    }
 
-                // Paso 4: Prueba cada número de la lista mezclada
-                for (int i = 0; i < listaNumeros.size(); i++) {
-                    int numeroActual = listaNumeros.get(i); // obtener el número actual de la lista
+    /**
+     * Genera el tablero Sudoku 6x6 usando backtracking (retroceso).
+     * Este método asegura que el tablero sea totalmente válido.
+     */
+    private void generarTablero() {
+        // Llama al método recursivo que intenta llenar el tablero
+        resolverSudoku(0, 0);
+    }
 
-                    if (validador.sePuedePonerNumero(tablero, fila, columna, numeroActual)) {// Verifica si se puede colocar este número en la celda
-                        tablero[fila][columna] = numeroActual; // colocar el número en el tablero
-                        break;
-                    }
+    /**
+     * Método recursivo que coloca los números usando backtracking.
+     * @param fila fila actual del tablero
+     * @param columna columna actual del tablero
+     * @return true si logra llenar todo el tablero, false si hay que retroceder
+     */
+    private boolean resolverSudoku(int fila, int columna) {
+
+        // Caso base: si llega al final de las filas, el tablero está completo
+        if (fila == TAMANO) {
+            return true;
+        }
+
+        // Calcular la siguiente celda (pasa a la siguiente fila al final de cada una)
+        int siguienteFila = (columna == TAMANO - 1) ? fila + 1 : fila;
+        int siguienteColumna = (columna + 1) % TAMANO;
+
+        // Mezclar los números 1–6 para variar los tableros generados
+        Collections.shuffle(listaNumeros);
+
+        // Probar cada número en la posición actual
+        for (int numero : listaNumeros) {
+            // Verificar si se puede colocar el número según las reglas del Sudoku
+            if (validador.sePuedePonerNumero(tablero, fila, columna, numero)) {
+                tablero[fila][columna] = numero; // Colocar número
+
+                // Llamada recursiva para la siguiente celda
+                if (resolverSudoku(siguienteFila, siguienteColumna)) {
+                    return true; // tablero completado con éxito
                 }
+
+                // Si no funciona más adelante, deshacer y probar otro número
+                tablero[fila][columna] = 0;
             }
         }
+
+        // Si ningún número sirve, retornar false para retroceder
+        return false;
     }
 
     /**

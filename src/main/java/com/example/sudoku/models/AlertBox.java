@@ -113,5 +113,43 @@ public class AlertBox implements IAlertBox {
 
         alert.showAndWait();
     }
+
+    @Override
+    public void mostrarError() {
+        String mensaje = "Hay conflictos en el tablero. Ese número no va aquí.";
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("¡Error!");
+        alert.setHeaderText("REVISA EL JUEGO!");
+        alert.setContentText(mensaje);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle(
+                "-fx-background-color: #FF7F54;" +   // fondo rosa
+                        "-fx-font-size: 14px;" +
+                        "-fx-font-weight: bold;"
+        );
+
+        alert.showAndWait();
+    }
+
+    @Override
+    public void mostrarNoHayAyuda() {
+        String mensaje = "No puedes usar ayuda en este momento.";
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("¡Error!");
+        alert.setHeaderText("No hay ayuda!");
+        alert.setContentText(mensaje);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle(
+                "-fx-background-color: #FF7F54;" +   // fondo rosa
+                        "-fx-font-size: 14px;" +
+                        "-fx-font-weight: bold;"
+        );
+
+        alert.showAndWait();
+    }
 }
 

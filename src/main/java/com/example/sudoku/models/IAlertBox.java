@@ -25,5 +25,8 @@ public interface IAlertBox {
      * Muestra un mensaje de victoria cuando se completa correctamente el tablero.
      */
     void mostrarVictoria();
+
+    void mostrarError();
+    void mostrarNoHayAyuda();
 }
 

@@ -53,6 +53,7 @@ public class InicioView extends Stage {
     }
 
     /**
+     *
      * Clase holder interna para la implementación del patrón Singleton.
      * Garantiza una inicialización perezosa y thread-safe.
      */

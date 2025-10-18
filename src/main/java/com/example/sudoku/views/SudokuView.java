@@ -13,7 +13,7 @@ import java.io.IOException;
  * Clase que representa la ventana principal del juego Sudoku.
  * Implementa el patrón Singleton para garantizar una única instancia.
  *
- * @author Jonathan Alexander Agurto Jimenez, Moisés David Arrazola Quiroz, Luis Rodrigo Grajeda Olivas
+ * @author Miguel Angel Lasso y Danna Sofia Gomez
  * @version 1.0
  */
 public class SudokuView extends Stage {

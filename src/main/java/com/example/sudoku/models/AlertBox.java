@@ -3,6 +3,7 @@ package com.example.sudoku.models;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 
 /**
  * Implementación de la interfaz IAlertBox.
@@ -20,24 +21,23 @@ public class AlertBox implements IAlertBox {
     @Override
     public void mostrarReglasSudoku() {
         String reglas = """
-                🎯 REGLAS DEL SUDOKU 2x3 🎯
+                🎯 REGLAS DEL SUDOKU 6x6 🎯
                 
                 • TABLERO: 6x6 celdas dividido en 6 regiones de 2x3
-                • OBJETIVO: Llenar el tablero con números del 1 al 6
                 • REGLAS:
                   ✓ Cada FILA debe contener números 1-6 sin repetir
                   ✓ Cada COLUMNA debe contener números 1-6 sin repetir
                   ✓ Cada REGIÓN 2x3 debe contener números 1-6 sin repetir
+                  ✓ Verifica los números uno por uno
                 
                 🆘 BOTÓN AYUDA:
-                • Puedes usar ayuda UNA vez por partida
+                • Puedes usar ayuda las veces que quieras
                 • La ayuda revelará un número correcto
-                • ⚠️ NO podrás GANAR si usas ayuda
+                • ⚠ NO podrás GANAR si usas ayuda
                 
                 ❌ ERRORES:
                 • El juego te avisará cuando cometas un error
                 • Los errores no terminan el juego
-                • Puedes corregir errores libremente
                 
                 🏆 VICTORIA:
                 • Completa TODO el tablero correctamente
@@ -49,8 +49,15 @@ public class AlertBox implements IAlertBox {
         alert.setHeaderText("📖 CÓMO JUGAR AL SUDOKU 2x3");
         alert.setContentText(reglas);
 
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle(
+                "-fx-background-color: #FF7F54;" +   // fondo rosa
+                        "-fx-font-size: 14px;" +
+                        "-fx-font-weight: bold;"
+        );
+
         alert.setWidth(600);
-        alert.setHeight(700);
+        alert.setHeight(800);
         alert.showAndWait();
     }
 
@@ -73,6 +80,13 @@ public class AlertBox implements IAlertBox {
         ButtonType botonNo = new ButtonType("No", ButtonBar.ButtonData.NO);
         alert.getButtonTypes().setAll(botonSi, botonNo);
 
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle(
+                "-fx-background-color: #FF7F54;" +   // fondo rosa
+                        "-fx-font-size: 14px;" +
+                        "-fx-font-weight: bold;"
+        );
+
         return alert.showAndWait().filter(response -> response == botonSi).isPresent();
     }
 
@@ -88,10 +102,67 @@ public class AlertBox implements IAlertBox {
         alert.setHeaderText("¡GANASTE EL JUEGO!");
         alert.setContentText(mensaje);
 
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle(
+                "-fx-background-color: #FF7F54;" +   // fondo rosa
+                        "-fx-font-size: 14px;" +
+                        "-fx-font-weight: bold;"
+        );
+
         ButtonType botonNuevoJuego = new ButtonType("Nuevo Juego", ButtonBar.ButtonData.OK_DONE);
         alert.getButtonTypes().setAll(botonNuevoJuego);
 
         alert.showAndWait();
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void mostrarError() {
+        String mensaje = "Hay conflictos en el tablero. Ese número no va aquí.";
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("¡Error!");
+        alert.setHeaderText("REVISA EL JUEGO!");
+        alert.setContentText(mensaje);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle(
+                "-fx-background-color: #FF7F54;" +   // fondo rosa
+                        "-fx-font-size: 14px;" +
+                        "-fx-font-weight: bold;"
+        );
+
+        alert.showAndWait();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean mostrarInicio() {
+        String mensaje = """
+    ¿Estás listo para jugar?
+
+    Antes de comenzar, asegúrate de haber leído y entendido las reglas""";
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Inicio Juego");
+        alert.setHeaderText("Confirmar Inicio de Juego");
+        alert.setContentText(mensaje);
+
+        ButtonType botonSi = new ButtonType("Sí", ButtonBar.ButtonData.YES);
+        ButtonType botonNo = new ButtonType("No", ButtonBar.ButtonData.NO);
+        alert.getButtonTypes().setAll(botonSi, botonNo);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle(
+                "-fx-background-color: #FF7F54;" +   // fondo rosa
+                        "-fx-font-size: 14px;" +
+                        "-fx-font-weight: bold;"
+        );
+
+        return alert.showAndWait().filter(response -> response == botonSi).isPresent();
     }
 }
 

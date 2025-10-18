@@ -46,6 +46,7 @@ public class TableroSudoku {
      * @param numero nuevo número a colocar (1–6 o 0 si se quiere borrar)
      */
     public void setNumero(int fila, int columna, int numero) {
+
         tablero[fila][columna] = numero;
     }
 
@@ -60,25 +61,10 @@ public class TableroSudoku {
     }
 
     /**
-     * Crea una copia exacta del tablero actual (útil para validaciones e implementar la ayuda del juego).
-     * @return una nueva instancia de TableroSudoku con los mismos valores
-     */
-    public TableroSudoku clonarTablero() {
-
-        TableroSudoku copia = new TableroSudoku(tablero); // crea un tablero vacío
-        for (int fila = 0; fila < TAMANO; fila++) {
-            for (int columna = 0; columna < TAMANO; columna++) {
-                copia.setNumero(fila, columna, this.tablero[fila][columna]); // copia celda por celda
-            }
-        }
-        return copia;
-        }
-
-    /**
      * Devuelve la matriz interna del tablero.
      * @return la matriz 6x6 actual
      */
-    public int[][] getMatriz() {
+    public int[][] getTablero() {
         return tablero;
     }
 }

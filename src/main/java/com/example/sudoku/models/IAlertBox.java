@@ -25,5 +25,13 @@ public interface IAlertBox {
      * Muestra un mensaje de victoria cuando se completa correctamente el tablero.
      */
     void mostrarVictoria();
+    /**
+    * Muestra un mensaje de error al usuario cuando se produce una acción inválida
+    * o se ingresa un dato incorrecto en el juego.*/
+    void mostrarError();
+
+    /**Muestra un mensaje de confirmación al momento que el jugador quiere iniciar el juego*/
+    boolean mostrarInicio();
+
 }
 

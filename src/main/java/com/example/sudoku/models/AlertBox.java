@@ -28,6 +28,7 @@ public class AlertBox implements IAlertBox {
                   ✓ Cada FILA debe contener números 1-6 sin repetir
                   ✓ Cada COLUMNA debe contener números 1-6 sin repetir
                   ✓ Cada REGIÓN 2x3 debe contener números 1-6 sin repetir
+                  ✓ Verifica los números uno por uno
                 
                 🆘 BOTÓN AYUDA:
                 • Puedes usar ayuda las veces que quieras
@@ -113,7 +114,9 @@ public class AlertBox implements IAlertBox {
 
         alert.showAndWait();
     }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void mostrarError() {
         String mensaje = "Hay conflictos en el tablero. Ese número no va aquí.";
@@ -133,14 +136,24 @@ public class AlertBox implements IAlertBox {
         alert.showAndWait();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void mostrarNoHayAyuda() {
-        String mensaje = "No puedes usar ayuda en este momento.";
+    public boolean mostrarInicio() {
+        String mensaje = """
+    ¿Estás listo para jugar?
 
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("¡Error!");
-        alert.setHeaderText("No hay ayuda!");
+    Antes de comenzar, asegúrate de haber leído y entendido las reglas""";
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Inicio Juego");
+        alert.setHeaderText("Confirmar Inicio de Juego");
         alert.setContentText(mensaje);
+
+        ButtonType botonSi = new ButtonType("Sí", ButtonBar.ButtonData.YES);
+        ButtonType botonNo = new ButtonType("No", ButtonBar.ButtonData.NO);
+        alert.getButtonTypes().setAll(botonSi, botonNo);
 
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.setStyle(
@@ -149,7 +162,7 @@ public class AlertBox implements IAlertBox {
                         "-fx-font-weight: bold;"
         );
 
-        alert.showAndWait();
+        return alert.showAndWait().filter(response -> response == botonSi).isPresent();
     }
 }
 

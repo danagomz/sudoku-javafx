@@ -10,6 +10,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+
 /**
  * Controlador de la pantalla de inicio del juego Sudoku.
  * Permite al usuario iniciar el juego o ver las reglas.
@@ -34,18 +36,17 @@ public class InicioController {
      * @param event Evento generado al presionar el botón.
      */
     @FXML
-    void onActionJugar(ActionEvent event) {
+    void onActionJugar(ActionEvent event) throws IOException {
         IAlertBox alertBox = new AlertBox();
         if (alertBox.mostrarInicio()) {
-        /*SudokuView sudokuView = SudokuView.getInstance();
-        Sudoku.show();
+        SudokuView sudokuView = SudokuView.getInstance();
+        sudokuView.show();
 
         // Close stage
         Node source = (Node)event.getSource();
         Stage stage = (Stage)source.getScene().getWindow();
         stage.close();
 
-        SudokuController sudokuController = sudokuView.getSudokuController();*/
         }
     }
 

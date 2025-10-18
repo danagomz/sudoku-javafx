@@ -153,7 +153,7 @@ public class ValidadorSudoku {
     }
 
     /**
-     * Revisa si todo el tablero está completamente lleno (sin celdas vacías).
+     * Revisa si todo el tablero esta completamente lleno (sin celdas vacías)
      * @param tablero El tablero de Sudoku actual.
      * @return true si el tablero está lleno, false si hay al menos una celda vacía.
      */
@@ -209,7 +209,7 @@ public class ValidadorSudoku {
                 }
             }
         }
-        return true; // todo el tablero es correcto
+        return true; //todo el tablero es correcto
     }
 
 }

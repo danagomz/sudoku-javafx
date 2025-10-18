@@ -11,33 +11,43 @@ import javafx.scene.layout.GridPane;
 import javafx.event.ActionEvent;
 import java.util.ArrayList;
 
+/**
+ * Controlador principal del tablero de Sudoku 6x6.
+ * Maneja la lógica de la interfaz, eventos de botones y teclado,
+ * verificación de números, conflictos y ayudas.
+ * @author Dana Sofia Gomez, Miguel Angel Lasso
+ * @version 1.0
+ */
 public class SudokuController {
-    /**
-     * ctes del tamaño total del tablero (6x6)
-     */
+    /** Tamaño del tablero (6x6). */
     private static final int TAMANO = 6;
-    private static final int FILAS_POR_BLOQUE = 2;
-    private static final int COLUMNAS_POR_BLOQUE = 3;
 
+    /** Modelo del juego Sudoku. */
     private Sudoku sudoku;
+
+    /** Interfaz para mostrar alertas y mensajes al usuario. */
     private IAlertBox alertBox;
 
+    /** Lista con todos los TextFields del tablero en orden. */
     private ArrayList<TextField> todosLosCampos;
+
+    /** Botón para pedir ayuda. */
     @FXML
     private Button btnAyuda;
 
+    /** Botón para iniciar un nuevo juego. */
     @FXML
     private Button btnNuevoJuego;
 
+    /** Botón para verificar los números ingresados. */
     @FXML
     private Button btnVerificar;
 
+    /** Contenedor principal del tablero Sudoku. */
     @FXML
     private GridPane gridpaneSudoku;
 
-    @FXML
-    private GridPane gridpaneb1, gridpaneb2, gridpaneb3, gridpaneb4, gridpaneb5, gridpaneb6;
-
+    /** TextFields que representan cada celda del tablero. */
     @FXML
     private TextField textField00, textField01, textField02, textField03, textField04, textField05;
     @FXML
@@ -51,36 +61,72 @@ public class SudokuController {
     @FXML
     private TextField textField50, textField51, textField52, textField53, textField54, textField55;
 
-    @FXML private void initialize() {
+    /**
+     * Inicializa el controlador después de que se cargue el FXML.
+     * Se encarga de iniciar todo el juego.
+     */
+    @FXML
+    private void initialize() {
         iniciarTodo();
     }
 
+    /**
+     * Inicializa todos los componentes del juego:
+     * crea el objeto Sudoku, la lista de TextFields,
+     * configura eventos, y actualiza la pantalla.
+     */
     private void iniciarTodo() {
         sudoku = new Sudoku();
         alertBox = new AlertBox();
         sudoku.iniciarJuego();
         todosLosCampos = new ArrayList<>();
+
         guardarTodosLosCampos();
-        configurarTodosLosEventos();
+        verificarNumeros();
+        configurarEventoEnter();
         actualizarPantalla();
     }
 
+    /**
+     * Acción del botón "Ayuda".
+     * Llama al método para dar una pista al usuario.
+     *
+     * @param event Evento generado al presionar el botón.
+     */
     @FXML
     void onActionAyuda(ActionEvent event) {
         darAyuda();
     }
 
+    /**
+     * Acción del botón "Nuevo Juego".
+     * Pregunta confirmación al usuario y reinicia el tablero si confirma.
+     *
+     * @param event Evento generado al presionar el botón.
+     */
     @FXML
     void onActionNuevoJuego(ActionEvent event) {
-        iniciarTodo();
+        if (alertBox.mostrarConfirmacionNuevoJuego()) {
+            iniciarTodo();
+        }
     }
 
+    /**
+     * Acción del botón "Verificar".
+     * Recorre todas las celdas y procesa los números
+     * igual que si se presionara Enter en cada TextField.
+     *
+     * @param event Evento generado al presionar el botón.
+     */
     @FXML
-    void onActionVerificar(ActionEvent event) {
-        verificarTodoElTablero();
+    void onActionVerificar(ActionEvent event) {    // Procesar todos los campos que tengan texto (como ENTER lo haría uno por uno)
+        verificarNumeros();
     }
 
-
+    /**
+     * Guarda todos los TextFields en la lista todosLosCampos
+     * para poder manejarlos más fácilmente.
+     */
     private void guardarTodosLosCampos() {
         // Agregar todos los TextFields a la lista en orden
         todosLosCampos.add(textField00);
@@ -126,7 +172,11 @@ public class SudokuController {
         todosLosCampos.add(textField55);
     }
 
-    private void configurarTodosLosEventos() {
+    /**
+     * Configura el evento de presionar la tecla Enter
+     * en cada TextField para procesar el número automáticamente.
+     */
+    private void configurarEventoEnter() {
 
         // Configurar evento Enter para cada TextField
         for (int i = 0; i < todosLosCampos.size(); i++) {
@@ -142,44 +192,61 @@ public class SudokuController {
         }
     }
 
+    /**
+     * Procesa un número ingresado en una celda del tablero.
+     * Verifica que sea válido, coloca el número si es correcto,
+     * marca conflictos si es incorrecto, y actualiza la pantalla.
+     *
+     * @param fila Fila de la celda.
+     * @param columna Columna de la celda.
+     * @param texto Texto ingresado en la celda.
+     */
     private void procesarNumero(int fila, int columna, String texto) {
         if (texto.isEmpty()) {
             return;
         }
 
-        try {
-            int numero = Integer.parseInt(texto);
+        int numero = 0;
+        boolean esNumeroValido = false;
 
-            // Verificar si el número es válido (1-6)
-            if (numero < 1 || numero > 6) {
-                alertBox.mostrarError();
-                return;
+        // Verificar si es número válido (1-6) y convertimos la info del textfield a int
+        for (int i = 1; i <= TAMANO; i++) {
+            if (texto.equals(String.valueOf(i))) {//se convierte el número de la lista a String para poder compararlos
+                numero = i;
+                esNumeroValido = true; // Solo se vuelve true si encuentra coincidencia(num del 1 al 6)
+                break;
             }
+        }
 
-            // Verificar si la celda está vacía
-            if (!sudoku.celdaEstaVacia(fila, columna)) {
-                alertBox.mostrarError();
-                return;
-            }
+        if (!esNumeroValido) {
+            alertBox.mostrarError();
+            return;
+        }
 
-            // Intentar colocar el número
-            boolean exito = sudoku.intentarPonerNumero(fila, columna, numero);
+// Verificar si la celda está vacía
+        if (!sudoku.celdaEstaVacia(fila, columna)) {
+            return;
+        }
 
-            if (exito) {
-                // Número válido - actualizar pantalla
-                actualizarPantalla();
-                verificarSiGano();
-            } else {
-                // Número inválido - marcar conflictos
-                marcarConflictos(fila, columna, numero);
-                alertBox.mostrarError();
-            }
+// Intentar colocar el número
+        boolean exito = sudoku.intentarPonerNumero(fila, columna, numero);
 
-        } catch (NumberFormatException e) {
+        if (exito) {
+            // Número válido - actualizar pantalla
+            actualizarPantalla();
+            verificarSiGano();
+        } else {
+            // Número inválido - marcar conflictos
+            marcarConflictos(fila, columna, numero);
             alertBox.mostrarError();
         }
     }
 
+
+    /**
+     * Actualiza todos los TextFields del tablero según el estado del Sudoku.
+     * Muestra números, bloquea celdas iniciales y aplica colores.
+     */
     private void actualizarPantalla() {
         for (int i = 0; i < todosLosCampos.size(); i++) {
             int fila = i / TAMANO;
@@ -188,13 +255,25 @@ public class SudokuController {
             int numero = sudoku.getNumeroEnCelda(fila, columna);
 
             if (numero != 0) {
+                // Muestra el número en la celda
                 campo.setText(String.valueOf(numero));
+
+                // Verifica si la celda es una del tablero original (no vacía)
                 boolean esInicial = !sudoku.celdaEstaVacia(fila, columna);
-                campo.setEditable(!esInicial);
-                campo.setStyle(esInicial ?
-                        "-fx-text-fill: black; -fx-background-color: #e0e0e0;" :
-                        "-fx-text-fill: black; -fx-background-color: white;");
+
+                // Si es una celda inicial, no se puede editar y tiene fondo gris
+                if (esInicial) {
+                    campo.setEditable(false);
+                    campo.setStyle("-fx-text-fill: black; -fx-background-color: #e0e0e0;");
+                }
+                // Si no es inicial, se puede editar y tiene fondo blanco
+                else {
+                    campo.setEditable(true);
+                    campo.setStyle("-fx-text-fill: black; -fx-background-color: white;");
+                }
+
             } else {
+                // Si el número es 0, la celda está vacía
                 campo.setText("");
                 campo.setEditable(true);
                 campo.setStyle("-fx-text-fill: black; -fx-background-color: white;");
@@ -203,6 +282,11 @@ public class SudokuController {
         btnAyuda.setDisable(!sudoku.sePuedeUsarAyuda());
     }
 
+
+    /**
+     * Limpia los colores de todas las celdas del tablero,
+     * dejando las celdas vacías en blanco y las iniciales en gris.
+     */
     private void limpiarColores() {
         for (int i = 0; i < todosLosCampos.size(); i++) {
             int fila = i / TAMANO;
@@ -225,26 +309,33 @@ public class SudokuController {
         }
     }
 
+    /**
+     * Marca en rojo las celdas que tienen conflictos con el número ingresado.
+     *
+     * @param filaProblematica Fila de la celda conflictiva.
+     * @param columnaProblematica Columna de la celda conflictiva.
+     * @param numeroProblematico Número que genera el conflicto.
+     */
     private void marcarConflictos(int filaProblematica, int columnaProblematica, int numeroProblematico) {
         limpiarColores();
 
         // Marcar celda problemática
-        int indice = filaProblematica * TAMANO + columnaProblematica;
-        todosLosCampos.get(indice).setStyle("-fx-text-fill: red;");
+        int posicionEnLista = filaProblematica * TAMANO + columnaProblematica;
+        todosLosCampos.get(posicionEnLista).setStyle("-fx-text-fill: red;");
 
         // Buscar conflictos en fila
-        for (int c = 0; c < TAMANO; c++) {
-            if (c != columnaProblematica && sudoku.getNumeroEnCelda(filaProblematica, c) == numeroProblematico) {
-                int idx = filaProblematica * TAMANO + c;
-                todosLosCampos.get(idx).setStyle("-fx-text-fill: red;");
+        for (int columna = 0; columna < TAMANO; columna++) {
+            if (columna != columnaProblematica && sudoku.getNumeroEnCelda(filaProblematica, columna) == numeroProblematico) {
+                int resaltarCeldasEnConflicto = filaProblematica * TAMANO + columna;
+                todosLosCampos.get(resaltarCeldasEnConflicto).setStyle("-fx-text-fill: red;");
             }
         }
 
         // Buscar conflictos en columna
-        for (int f = 0; f < TAMANO; f++) {
-            if (f != filaProblematica && sudoku.getNumeroEnCelda(f, columnaProblematica) == numeroProblematico) {
-                int idx = f * TAMANO + columnaProblematica;
-                todosLosCampos.get(idx).setStyle("-fx-text-fill: red;");
+        for (int fila = 0; fila < TAMANO; fila++) {
+            if (fila != filaProblematica && sudoku.getNumeroEnCelda(fila, columnaProblematica) == numeroProblematico) {
+                int resaltarCeldasEnConflicto = fila * TAMANO + columnaProblematica;
+                todosLosCampos.get(resaltarCeldasEnConflicto).setStyle("-fx-text-fill: red;");
             }
         }
 
@@ -252,95 +343,58 @@ public class SudokuController {
         int filaInicio = (filaProblematica / 2) * 2;
         int columnaInicio = (columnaProblematica / 3) * 3;
 
-        for (int f = filaInicio; f < filaInicio + 2; f++) {
-            for (int c = columnaInicio; c < columnaInicio + 3; c++) {
-                if ((f != filaProblematica || c != columnaProblematica) &&
-                        sudoku.getNumeroEnCelda(f, c) == numeroProblematico) {
-                    int idx = f * TAMANO + c;
-                    todosLosCampos.get(idx).setStyle("-fx-text-fill: red;");
+        for (int fila = filaInicio; fila < filaInicio + 2; fila++) {
+            for (int columna = columnaInicio; columna < columnaInicio + 3; columna++) {
+                if ((fila != filaProblematica || columna != columnaProblematica) && sudoku.getNumeroEnCelda(fila, columna) == numeroProblematico) {
+                    int resaltarCeldasEnConflicto = fila * TAMANO + columna;
+                    todosLosCampos.get(resaltarCeldasEnConflicto).setStyle("-fx-text-fill: red;");
                 }
             }
         }
     }
 
-    private void verificarTodoElTablero() {
-        if (sudoku.verificarSiGano()) {
-            alertBox.mostrarVictoria();
-        } else {
-            // Buscar y marcar todos los conflictos en el tablero
-            buscarTodosLosConflictos();
-            alertBox.mostrarError();
-        }
-    }
+    private void verificarNumeros() {
+        for (int i = 0; i < todosLosCampos.size(); i++) {
+            TextField campo = todosLosCampos.get(i);
+            int fila = i / TAMANO;
+            int columna = i % TAMANO;
+            String texto = campo.getText();
 
-    private void buscarTodosLosConflictos() {
-        limpiarColores();
-        boolean hayConflictos = false;
+            boolean tieneTexto = !texto.isEmpty();
+            boolean esEditable = campo.isEditable();
 
-        // Verificar cada celda
-        for (int fila = 0; fila < TAMANO; fila++) {
-            for (int columna = 0; columna < TAMANO; columna++) {
-                int numeroActual = sudoku.getNumeroEnCelda(fila, columna);
-                if (numeroActual != 0) {
-                    // Verificar si hay conflicto
-                    if (tieneConflicto(fila, columna, numeroActual)) {
-                        int indice = fila * TAMANO + columna;
-                        todosLosCampos.get(indice).setStyle("-fx-text-fill: red;");
-                        hayConflictos = true;
-                    }
-                }
+            if (tieneTexto && esEditable) {
+                procesarNumero(fila, columna, texto);
             }
         }
     }
 
-    private boolean tieneConflicto(int fila, int columna, int numero) {
-        // Verificar fila
-        for (int c = 0; c < TAMANO; c++) {
-            if (c != columna && sudoku.getNumeroEnCelda(fila, c) == numero) {
-                return true;
+    /**
+     * Recorre todas las celdas del tablero y procesa los números
+     * que el usuario haya ingresado en celdas editables.
+     * Funciona de manera similar a presionar Enter en cada TextField.
+     */
+    private void darAyuda () {
+        if (sudoku.sePuedeUsarAyuda()) {
+            int[] ayuda = sudoku.proporcionarAyuda();
+
+            if (ayuda != null) {
+                actualizarPantalla();
+                int posicionEnLista = ayuda[0] * TAMANO + ayuda[1];
+                todosLosCampos.get(posicionEnLista).setStyle("-fx-text-fill: blue;");
+                verificarSiGano();
             }
         }
-
-        // Verificar columna
-        for (int f = 0; f < TAMANO; f++) {
-            if (f != fila && sudoku.getNumeroEnCelda(f, columna) == numero) {
-                return true;
-            }
-        }
-
-        // Verificar bloque
-        int filaInicio = (fila / 2) * 2;
-        int columnaInicio = (columna / 3) * 3;
-
-        for (int f = filaInicio; f < filaInicio + 2; f++) {
-            for (int c = columnaInicio; c < columnaInicio + 3; c++) {
-                if ((f != fila || c != columna) && sudoku.getNumeroEnCelda(f, c) == numero) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
-        private void darAyuda () {
-            if (sudoku.sePuedeUsarAyuda()) {
-                int[] ayuda = sudoku.proporcionarAyuda();
-                if (ayuda != null) {
-                    actualizarPantalla();
-                    int indice = ayuda[0] * TAMANO + ayuda[1];
-                    todosLosCampos.get(indice).setStyle("-fx-text-fill: blue;");
-                    verificarSiGano();
-                }
-            } else {
-                alertBox.mostrarNoHayAyuda();
-            }
-        }
-
+    /**
+     * Verifica si el jugador ha completado correctamente el tablero.
+     * Si el jugador gana, muestra un mensaje de victoria y reinicia el juego.
+     */
         private void verificarSiGano () {
             if (sudoku.verificarSiGano()) {
                 alertBox.mostrarVictoria();
+                iniciarTodo();
             }
         }
     }
-

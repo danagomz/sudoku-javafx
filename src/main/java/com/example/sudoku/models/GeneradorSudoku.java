@@ -52,12 +52,12 @@ public class GeneradorSudoku {
      * Este método asegura que el tablero sea totalmente válido.
      */
     private void generarTablero() {
-        // Llama al método recursivo que intenta llenar el tablero
+        // Llama al meotodo recursivo
         resolverSudoku(0, 0);
     }
 
     /**
-     * Método recursivo que coloca los números usando backtracking.
+     * Metodo recursivo que coloca los números usando backtracking.
      * @param fila fila actual del tablero
      * @param columna columna actual del tablero
      * @return true si logra llenar todo el tablero, false si hay que retroceder
@@ -144,6 +144,7 @@ public class GeneradorSudoku {
      * @return una matriz de 6x6 con los números del Sudoku válido
      */
     public int[][] getTablero() {
+
         return tablero;
     }
 
@@ -152,6 +153,7 @@ public class GeneradorSudoku {
      * @return una matriz de 6x6 con los números del Sudoku válido
      */
     public int[][] getTableroJugador() {
+
         return tableroJugador;
     }
 

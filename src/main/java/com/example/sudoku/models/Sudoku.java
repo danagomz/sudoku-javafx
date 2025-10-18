@@ -2,19 +2,23 @@ package com.example.sudoku.models;
 
 public class Sudoku {
     private static final int TAMANO = 6;
-    private TableroSudoku tablero;
     private ValidadorSudoku validador;
+    private TableroSudoku tableroJugador;
     private GeneradorSudoku generador;
     private int celdasVaciasRestantes;
-
+    private int[][] tableroSolucion;
     /**
      * Constructor de la clase Sudoku.
      * Inicializa los componentes principales del juego.
      */
     public Sudoku() {
-        this.validador = new ValidadorSudoku();
         this.generador = new GeneradorSudoku();
-        this.celdasVaciasRestantes = 0;
+        this.validador = new ValidadorSudoku();
+        tableroSolucion = generador.getTablero();
+
+        int[][] pistasIniciales = generador.generarTableroJugador();
+        tableroJugador = new TableroSudoku(pistasIniciales);//primeros num del sudoku
+        this.celdasVaciasRestantes = contarCeldasVacias();
     }
 
     /**
@@ -24,7 +28,7 @@ public class Sudoku {
     public void iniciarJuego() {
         // Generar un nuevo tablero para el jugador
         int[][] tableroJugador = generador.generarTableroJugador();
-        this.tablero = new TableroSudoku(tableroJugador);
+        this.tableroJugador = new TableroSudoku(tableroJugador);
         this.celdasVaciasRestantes = contarCeldasVacias();
     }
 
@@ -34,10 +38,10 @@ public class Sudoku {
      */
     private int contarCeldasVacias() {
         int vacias = 0;
-        int[][] matriz = tablero.getMatriz();
+        int[][] juegoActual = tableroJugador.getTablero();
         for (int fila = 0; fila < TAMANO; fila++) {
             for (int columna = 0; columna < TAMANO; columna++) {
-                if (matriz[fila][columna] == 0) {
+                if (juegoActual[fila][columna] == 0) {
                     vacias++;
                 }
             }
@@ -55,7 +59,7 @@ public class Sudoku {
      */
     public boolean intentarPonerNumero(int fila, int columna, int numero) {
 
-        if (!tablero.estaVacio(fila, columna)) {// Verificar que la celda esté vacía
+        if (!tableroJugador.estaVacio(fila, columna)) {// Verificar que la celda esté vacía
             return false;
         }
 
@@ -63,14 +67,12 @@ public class Sudoku {
             return false;
         }
 
-        int[][] matrizActual = tablero.getMatriz(); // Obtener la matriz actual del tablero para validar
-
-        // Verificar si se puede poner el número usando el validador
-        if (validador.sePuedePonerNumero(matrizActual, fila, columna, numero)) {
-            tablero.setNumero(fila, columna, numero); // Actualizar el tablero con el nuevo número
+        if (tableroSolucion[fila][columna] == numero) {
+            tableroJugador.setNumero(fila, columna, numero); // Número correcto
             celdasVaciasRestantes--;
             return true;
         }
+
         return false;
     }
 
@@ -80,11 +82,11 @@ public class Sudoku {
      * @return true si el jugador ganó, false en caso contrario
      */
     public boolean verificarSiGano() {
-        int[][] matrizActual = tablero.getMatriz();
+        int[][] juegoActual = tableroJugador.getTablero();
 
         // Verificar si el tablero está lleno y es correcto
-        boolean tableroLleno = validador.tableroLleno(matrizActual);
-        boolean tableroCorrecto = validador.tableroEsCorrecto(matrizActual);
+        boolean tableroLleno = validador.tableroLleno(juegoActual);
+        boolean tableroCorrecto = validador.tableroEsCorrecto(juegoActual);
 
         return tableroLleno && tableroCorrecto;
     }
@@ -102,19 +104,21 @@ public class Sudoku {
             return null; // No se permite ayuda en el último turno
         }
 
-        int[][] matrizActual = tablero.getMatriz();
-        int[][] tableroCompleto = generador.getTablero(); // Tablero solución
-
         // Buscar una celda vacía en el tablero del jugador
         for (int fila = 0; fila < 6; fila++) {
             for (int columna = 0; columna < 6; columna++) {
-                if (tablero.estaVacio(fila, columna)) {
-                    int numeroCorrecto = tableroCompleto[fila][columna]; // Obtener el número correcto del tablero completo
+                if (tableroJugador.estaVacio(fila, columna)) {
+                    int numeroCorrecto = tableroSolucion[fila][columna]; // Obtener el número correcto del tablero completo
 
-                    tablero.setNumero(fila, columna, numeroCorrecto);// Poner el número en el tablero del jugador
+                    tableroJugador.setNumero(fila, columna, numeroCorrecto);// Poner el número en el tablero del jugador
                     celdasVaciasRestantes--;
 
-                    return new int[]{fila, columna, numeroCorrecto};
+                    int[] ayuda = new int[3]; //guardamos fila, columna y la pista en un array ya que son datos fijos
+                    ayuda[0] = fila;
+                    ayuda[1] = columna;
+                    ayuda[2] = numeroCorrecto;
+
+                    return ayuda;
                 }
             }
         }
@@ -127,40 +131,8 @@ public class Sudoku {
      * @return true si se puede usar ayuda, false en caso contrario
      */
     public boolean sePuedeUsarAyuda() {
+
         return celdasVaciasRestantes > 1;
-    }
-
-    /**
-     * Obtiene el tablero actual del juego.
-     * @return el tablero actual
-     */
-    public TableroSudoku getTablero() {
-        return tablero;
-    }
-
-    /**
-     * Obtiene el tablero completo (solución) del generador.
-     * @return el tablero completo con la solución
-     */
-    public int[][] getTableroCompleto() {
-        return generador.getTablero();
-    }
-
-    /**
-     * Obtiene el número de celdas vacías restantes.
-     * @return número de celdas vacías
-     */
-    public int getCeldasVaciasRestantes() {
-        return celdasVaciasRestantes;
-    }
-
-    /**
-     * Reinicia el juego actual, limpiando el tablero pero manteniendo la misma configuración inicial.
-     */
-    public void reiniciarJuegoActual() {
-        int[][] matrizInicial = generador.getTableroJugador();
-        this.tablero = new TableroSudoku(matrizInicial);
-        this.celdasVaciasRestantes = contarCeldasVacias();
     }
 
     /**
@@ -170,7 +142,8 @@ public class Sudoku {
      * @return El número en la celda, o 0 si está vacía
      */
     public int getNumeroEnCelda(int fila, int columna) {
-        return tablero.getNumero(fila, columna);
+
+        return tableroJugador.getNumero(fila, columna);
     }
 
     /**
@@ -180,7 +153,8 @@ public class Sudoku {
      * @return true si la celda está vacía, false si tiene un número
      */
     public boolean celdaEstaVacia(int fila, int columna) {
-        return tablero.estaVacio(fila, columna);
+
+        return tableroJugador.estaVacio(fila, columna);
     }
 
 }
